@@ -13,10 +13,11 @@ This repository is for creating Ainize Workspace images for Huggingface Transfor
 ```
 Package                           Version
 --------------------------------- ------------
+accelerate                        0.5.1
 apex                              0.1
-huggingface-hub                   0.1.2
+deepspeed                         0.5.7
 numpy                             1.21.4
-torch                             1.10.0
+torch                             1.8.2
 transformers                      4.12.5
 ```
 

@@ -1,5 +1,5 @@
 # Base Image For Ainize Workspace ( https://github.com/ainize-team/ainize-workspace-base-images )
-FROM byeongal/ubuntu20.04-cuda11.3.1-python3.8.10-dev
+FROM byeongal/ubuntu20.04-cuda11.1.1-python3.8.10-dev
 
 USER root
 ## Basic Env
