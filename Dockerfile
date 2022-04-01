@@ -20,7 +20,6 @@ RUN \
     chmod a+rwx /usr/bin/fix-permissions.sh 
 
 # Install Ubuntu Package
-# Install Ubuntu Package
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
     apt-get upgrade --yes && \
@@ -54,6 +53,7 @@ RUN apt-get update --yes && \
 	sudo \
 	tesseract-ocr \
 	tini \
+	unzip \
 	vim \
 	vim-common \
 	wget && \
