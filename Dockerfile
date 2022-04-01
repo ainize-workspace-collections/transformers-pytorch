@@ -156,10 +156,10 @@ ENV HOME=$WORKSPACE_HOME
 WORKDIR $WORKSPACE_HOME
 
 # Install package from environment.yml ( conda )
-# COPY environment.yml ./environment.yml
-# RUN conda env update --name root --file environment.yml && \
-#     rm environment.yml && \
-#     clean-layer.sh
+COPY environment.yml ./environment.yml
+RUN conda env update --name root --file environment.yml && \
+    rm environment.yml && \
+    clean-layer.sh
 
 ### Start Ainize Worksapce ###
 COPY start.sh /scripts/start.sh
