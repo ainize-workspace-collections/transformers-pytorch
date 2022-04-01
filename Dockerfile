@@ -20,6 +20,7 @@ RUN \
     chmod a+rwx /usr/bin/fix-permissions.sh 
 
 # Install Ubuntu Package
+# Install Ubuntu Package
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
     apt-get upgrade --yes && \
@@ -32,15 +33,16 @@ RUN apt-get update --yes && \
 	ccache \
 	cmake \
 	curl \
+	espeak-ng \
 	ffmpeg \
 	fonts-liberation \
 	g++ \
 	git \
-	imagemagick \
-	libgl1-mesa-glx \
+	libaio-dev \
 	libjpeg-dev \
 	libjson-c-dev \
 	libpng-dev \
+	libsndfile1-dev \
 	libssl-dev \
 	libtool \
 	libwebsockets-dev \
@@ -50,8 +52,8 @@ RUN apt-get update --yes && \
 	pkg-config \
 	run-one \
 	sudo \
+	tesseract-ocr \
 	tini \
-	unzip \
 	vim \
 	vim-common \
 	wget && \
