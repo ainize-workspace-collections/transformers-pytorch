@@ -7,7 +7,38 @@ This branch is for creating Ainize Workspace images.
 
 ## Installed Python libraries
 
-### How to Test Your Image
+### Machine Learning Frameworks
+
+- [scikit-learn](https://github.com/scikit-learn/scikit-learn)
+- [PyTorch](https://github.com/pytorch/pytorch)
+- [jax](https://github.com/google/jax)
+
+### Data Visualization
+
+- [Matplotlib](https://github.com/matplotlib/matplotlib)
+- [Plotly](https://github.com/plotly/plotly.py)
+- [dash](https://github.com/plotly/dash)
+
+### Distributed Machine Learning
+
+- [Ray](https://github.com/ray-project/ray)
+- [deepspeed](https://github.com/microsoft/DeepSpeed)
+
+### Text Data & NLP
+
+- [transformers](https://github.com/huggingface/transformers)
+- [nltk](https://github.com/nltk/nltk)
+- [tokenizers](https://github.com/huggingface/tokenizers)
+
+### Hyperparameter Optimization & AutoML
+
+- [optuna](https://github.com/optuna/optuna)
+
+### Model Serialization & Deployment
+
+- [onnx](https://github.com/onnx/onnx)
+
+## How to Test Your Image
 
 Build Docker Image
 
