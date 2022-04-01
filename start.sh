@@ -18,7 +18,7 @@ if [ "$IPYNB_FILE" ]
 then
   wget -nc "${IPYNB_FILE}"
 fi
-chmod -R 555 "${WORKSPACE_HOME}"
+chmod -R 555 /workspace
 
 # Do not change the port number 8000.
 jupyter notebook  --NotebookApp.token=$PASSWORD --ip=0.0.0.0 --port=8000 --allow-root &
@@ -32,7 +32,7 @@ fi
 
 # Do not change the port number 8010.
 export PORT="8010"
-code-server "${WORKSPACE_HOME}" --bind-addr=0.0.0.0:8010 --auth $AUTH &
+code-server /workspace/ --bind-addr=0.0.0.0:8010 --auth $AUTH &
 
 if [ -z "$PASSWORD" ]
 then
