@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.3.1-devel-ubuntu20.04
+FROM nvidia/cuda:11.6.1-cudnn8-devel-ubuntu20.04
 
 USER root
 
@@ -108,7 +108,7 @@ RUN set -x && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
     mamba clean --all -f -y && \
-    fix-permissions "${CONDA_DIR}"
+    fix-permissions.sh "${CONDA_DIR}"
 
 # Install Jupyter
 RUN mamba install --quiet --yes \
@@ -165,10 +165,10 @@ ENV HOME=$WORKSPACE_HOME
 WORKDIR $WORKSPACE_HOME
 
 # Install package from environment.yml ( conda )
-# COPY environment.yml ./environment.yml
-# RUN conda env update --name root --file environment.yml && \
-#     rm environment.yml && \
-#     clean-layer.sh
+COPY environment.yml ./environment.yml
+RUN mamba env update --name root --file environment.yml && \
+    rm environment.yml && \
+    clean-layer.sh
 
 ### Start Ainize Worksapce ###
 COPY start.sh /scripts/start.sh
