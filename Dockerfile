@@ -1,6 +1,5 @@
 FROM nvidia/cuda:11.3.1-devel-ubuntu20.04
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 USER root
 
 ENV \
@@ -24,39 +23,39 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
     apt-get upgrade --yes && \
     apt-get install --yes --no-install-recommends \
-	apt-utils \
-	autoconf \
-	automake \
-	build-essential \
-	ca-certificates \
-	ccache \
-	cmake \
-	curl \
-	espeak-ng \
-	ffmpeg \
-	fonts-liberation \
-	g++ \
-	git \
-	libaio-dev \
-	libjpeg-dev \
-	libjson-c-dev \
-	libpng-dev \
-	libsndfile1-dev \
-	libssl-dev \
-	libtool \
-	libwebsockets-dev \
-	locales \
-	make \
-	pandoc \
-	pkg-config \
-	run-one \
-	sudo \
-	tesseract-ocr \
-	tini \
-	unzip \
-	vim \
-	vim-common \
-	wget && \
+    apt-utils \
+    autoconf \
+    automake \
+    build-essential \
+    ca-certificates \
+    ccache \
+    cmake \
+    curl \
+    espeak-ng \
+    ffmpeg \
+    fonts-liberation \
+    g++ \
+    git \
+    libaio-dev \
+    libjpeg-dev \
+    libjson-c-dev \
+    libpng-dev \
+    libsndfile1-dev \
+    libssl-dev \
+    libtool \
+    libwebsockets-dev \
+    locales \
+    make \
+    pandoc \
+    pkg-config \
+    run-one \
+    sudo \
+    tesseract-ocr \
+    tini \
+    unzip \
+    vim \
+    vim-common \
+    wget && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen && \
     clean-layer.sh
@@ -73,33 +72,43 @@ COPY scripts/fix-permissions.sh  /usr/bin/fix-permissions.sh
 # Make clean-layer and fix-permissions executable
 RUN chmod a+rwx /usr/bin/clean-layer.sh && chmod a+rwx /usr/bin/fix-permissions.sh
 
+RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashrc && \
+    # Add call to conda init script see https://stackoverflow.com/a/58081608/4413446
+    echo 'eval "$(command conda shell.bash hook 2> /dev/null)"' >> /etc/skel/.bashrc
+
 # Install Python
-ENV \
-    CONDA_DIR=/opt/conda \
-    CONDA_ROOT=/opt/conda
+# Configure environment
+ARG PYTHON_VERSION=3.8
+ENV CONDA_DIR=/opt/conda 
 ENV PATH="${CONDA_DIR}/bin:${PATH}"
-ARG \
-    PYTHON_VERSION=default \
-    CONDA_MIRROR=https://github.com/conda-forge/miniforge/releases/latest/download
+
+COPY scripts/initial-condarc "${CONDA_DIR}/.condarc"
+WORKDIR /tmp
 
 RUN set -x && \
-    # Miniforge installer
-    miniforge_arch=$(uname -m) && \
-    miniforge_installer="Mambaforge-Linux-${miniforge_arch}.sh" && \
-    wget --quiet "${CONDA_MIRROR}/${miniforge_installer}" && \
-    /bin/bash "${miniforge_installer}" -f -b -p "${CONDA_DIR}" && \
-    rm "${miniforge_installer}" && \
-    # Conda configuration see https://conda.io/projects/conda/en/latest/configuration.html
-    conda config --system --set auto_update_conda false && \
-    conda config --system --set show_channel_urls true && \
-    if [[ "${PYTHON_VERSION}" != "default" ]]; then mamba install --quiet --yes python="${PYTHON_VERSION}"; fi && \
+    arch=$(uname -m) && \
+    if [ "${arch}" = "x86_64" ]; then \
+    # Should be simpler, see <https://github.com/mamba-org/mamba/issues/1437>
+    arch="64"; \
+    fi && \
+    wget -qO /tmp/micromamba.tar.bz2 \
+    "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
+    tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
+    rm /tmp/micromamba.tar.bz2 && \
+    PYTHON_SPECIFIER="python=${PYTHON_VERSION}" && \
+    if [[ "${PYTHON_VERSION}" == "default" ]]; then PYTHON_SPECIFIER="python"; fi && \
+    # Install the packages
+    ./micromamba install \
+    --root-prefix="${CONDA_DIR}" \
+    --prefix="${CONDA_DIR}" \
+    --yes \
+    "${PYTHON_SPECIFIER}" \
+    'mamba' && \
+    rm micromamba && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
-    # Using conda to update all packages: https://github.com/mamba-org/mamba/issues/1092
-    conda update --all --quiet --yes && \
-    conda clean --all -f -y && \
-    fix-permissions.sh $CONDA_ROOT && \
-    clean-layer.sh
+    mamba clean --all -f -y && \
+    fix-permissions "${CONDA_DIR}"
 
 # Install Jupyter
 RUN mamba install --quiet --yes \
@@ -156,10 +165,10 @@ ENV HOME=$WORKSPACE_HOME
 WORKDIR $WORKSPACE_HOME
 
 # Install package from environment.yml ( conda )
-COPY environment.yml ./environment.yml
-RUN conda env update --name root --file environment.yml && \
-    rm environment.yml && \
-    clean-layer.sh
+# COPY environment.yml ./environment.yml
+# RUN conda env update --name root --file environment.yml && \
+#     rm environment.yml && \
+#     clean-layer.sh
 
 ### Start Ainize Worksapce ###
 COPY start.sh /scripts/start.sh
